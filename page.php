@@ -13,11 +13,11 @@
  
 get_header(); ?>
 
-<!-- get the sub-nav code to display on the left hand side, this code was originally in sidebar.php but now seperated to allow it to be positioned before the main content to assit with CSS positioning and for semantic purposes -->
-  <?php get_template_part( 'subnav' ); ?>
+  <?php // get the sub-nav code to display on the left hand side, this code was originally in sidebar.php but now seperated to allow it to be positioned before the main content to assit with CSS positioning and for semantic purposes
  
-        <div id="primary" class="content-area col-sm-10 col-md-8">
-            <div id="content" class="site-content" role="main">
+          get_template_part( 'subnav' ); ?>
+
+        <main id="maincontent" class="content-area general">
  
                 <?php while ( have_posts() ) : the_post(); ?>
  
@@ -26,9 +26,8 @@ get_header(); ?>
                     <?php comments_template( '', true ); ?>
  
                 <?php endwhile; // end of the loop. ?>
- 
-            </div><!-- #content .site-content -->
-        </div><!-- #primary .content-area -->
+          
+        </main>
  
 <?php get_sidebar(); ?>
 <?php get_footer(); ?>

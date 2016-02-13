@@ -54,54 +54,73 @@ echo ' | ' . sprintf( __( 'Page %s', 'venture' ), max( $paged, $page ) );
 	
 </head>
  
-<body <?php body_class(); ?>>
+<body <?php // check if page title is equal to 'Home' or if page has a custom field of 'MenuName'
+						$key = 'MenuName';
+						$page_title = get_the_title();
+						if ($page_title === 'Home') {
+ 									echo 'id="home"';
+						} elseif (is_search()) {
+ 									echo 'id="search"';
+						} else {
+							$themeta = get_post_meta($post->ID, $key, TRUE);
+ 							 if ($themeta === '') {
+										echo 'id="no-sub-menu"'; 
+							 };
+						};
+
+							?> <?php body_class(); ?>>
 
 <div id="page" class="hfeed site">
      <header id="masthead" class="site-header">
 
-		<div class="assistive-text"><?php _e( 'Menu', 'venture' ); ?></div>
-		<div class="assistive-text skip-link"><a href="#content" title="<?php esc_attr_e( 'Skip to content', '_s' ); ?>"><?php _e( 'Skip to content', 'venture' ); ?></a></div>
+		<div id="skip"><a href="#maincontent" title="<?php esc_attr_e( 'Skip to content', '_s' ); ?>"><?php _e( 'Skip to content', 'venture' ); ?></a></div>
 
-	<nav class="site-navigation main-navigation container-fluid">
+	<nav class="site-navigation main-navigation" aria-label="primary">
 
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Brand</a>
-    </div>
-	
-<!-- wp-bootstrap-navwalker from Edward McIntyre (twittem) -->
 		<?php
             wp_nav_menu( array(
                 'menu'              => 'primary',
                 'theme_location'    => 'primary',
+                'container'    => '',
                 'depth'             => 2,
-                'container'         => 'div',
-                'container_class'   => 'collapse navbar-collapse',
-        'container_id'      => 'bs-example-navbar-collapse-1',
-                'menu_class'        => 'nav navbar-nav',
-                'fallback_cb'       => 'wp_bootstrap_navwalker::fallback',
-                'walker'            => new wp_bootstrap_navwalker())
-            );
+						    'items_wrap' => my_nav_wrap_main_menu()
+            ));
         ?>
 		
        <?php get_search_form(); ?>
         
 	</nav><!-- .site-navigation .main-navigation -->
 
-<h1 class="site-title"><a href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
-<!--             <h2 class="site-description"><?php //bloginfo( 'description' ); ?></h2>-->
+<div class="logo-newsletter">
+
+	<div class="logo">
+
+		<a<?php   $page_title = get_the_title();
+			 				if ($page_title != 'home') {
+								echo ' href="/index.php"';
+							};?>>
+			<img src="<?php echo get_template_directory_uri() ?>/img/vca-logo-original.png" width="350" height="90" alt="the logo for the venture community association">
+		</a>
+
+	</div>
+
+</div>
+			 
+<h1 class="site-title">Venture : <?php if ( is_search() ) {
+	echo 'Search Results';
+} else {
+	echo $page_title;
+};
+	?></h1>
 
      </header><!-- #masthead .site-header -->
 	
-	<?php dimox_breadcrumbs(); ?>
-	
-	<div class="container">
-<div id="main" class="site-main row">
+	<?php if ($page_title != 'Home') {
+	the_breadcrumb();
+}
+	?>
+		
+<!-- 	<div class=""> -->
+<!-- <div> -->
 	
 	

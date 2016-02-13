@@ -1,9 +1,9 @@
 <?php
 /**
 *
-Template Name: Activities Template
+
 *
-* The template for displaying the 'Activities' custom post types pages.
+* The template for displaying the Front Page.
 *
 * Learn more: http://codex.wordpress.org/Template_Hierarchy
 *
@@ -11,12 +11,10 @@ Template Name: Activities Template
 * @since venture 1.0
 */
  
-get_header(); 
-get_sidebar(); ?>
+get_header();
+get_sidebar('right');?>
 
-<section id="primary" class="content-area col-md-8">
-	
-<div id="content" class="site-content" role="main">
+<main id="maincontent" class="content-area general">
   
              <?php while ( have_posts() ) : the_post(); ?>
  
@@ -26,11 +24,10 @@ get_sidebar(); ?>
  
                 <?php endwhile; // end of the loop. ?>
  
-	
-<div class="portfolio">
-  
 <h2>Today's Activities</h2>
  
+<div class="portfolio">
+	
 <?php
 	
 // Get the page title so that we can display certain posts
@@ -61,32 +58,43 @@ $today = date("l");
     while ( $activities_loop->have_posts() ) : $activities_loop->the_post();
  
 	// Set variables
-  $title = get_the_title();
-	$activity_category = get_field('activity_category'); 
-	$day = get_field('day');
-	$start_time = get_field('start_time');
-	$end_time = get_field('end_time');
-
+	$category = get_the_category();
+	$activities_start_time = get_post_meta( get_the_ID(), 'activities-start-time', true );
+	$activities_end_time = get_post_meta( get_the_ID(), 'activities-end-time', true );
+	$activities_weekday = get_post_meta( $post->ID, 'activities-weekday', true );
     
 	// Output
       ?>
 	
-     <article id="<?php echo basename(get_permalink()); ?>" class="<?php echo seoUrl($activity_category); ?> col-md-4 entry">
-		  <div class="inner">
-			<header class="entry-header col-md-4">
-				  <h3 class="entry-title"><?php echo $title; ?></h3>
+      <article id="<?php echo basename(get_permalink()); ?>" class="<?php echo seoUrl(esc_html( $category[0]->name )); ?>  entry">
+			<div class="inner">
+				<header>
+				  <h3><?php echo the_title(); ?></h3>
 				  <figure>
-					  <?php echo the_post_thumbnail('full', array('class' => 'img-responsive img-circle')); ?>
-					  <div>Category: <?php echo $activity_category; ?></div>
-					  <div>Day: <?php echo $today; ?></div>
-					  <div>From: <?php echo $start_time; ?></div>
-					  <div>To: <?php echo $end_time; ?></div>
-						<div class="go-to-link">
-						<a href="<?php echo get_permalink(); ?>">More information</a>
-						</div><!--	.go-to-link -->
-				</figure>
-				</header>
-		  </div> <!-- close .inner -->
+						<?php echo the_post_thumbnail('full', array('class' => 'img-responsive img-circle')); ?>
+				  </figure>
+			</header>
+			<section>
+					<p><em>Category: </em><?php echo !empty( $category ) ? esc_html( $category[0]->name ) : ''; ?></p>
+					<p><em>Day(s): </em><?php if ( count($activities_weekday) === 1) {
+									echo '<a href="/activities-2/' . seoUrl($day) . '#' . basename(get_permalink()) . '">' . esc_html( $activities_weekday[0] ) . 's</a><br>';
+																} else { ?>
+																	<?php
+														// Set a new variable to contain the html in string form
+ 															$weekday_links = array(); 
+																foreach( $activities_weekday as $day ) {
+																	$weekday_links[] = '<a href="/activities-2/' . seoUrl($day) . '#' . basename(get_permalink()) . '">' . esc_html( $day ) . 's</a><br>';
+																	};
+																	echo implode( ' / ', $weekday_links);
+																	 }; ?>
+						</p>
+					 <p><em>Time: </em><?php echo esc_html( date( 'g:ia', $activities_start_time ) ); ?>-<?php echo esc_html( date( 'g:ia', $activities_end_time ) ); ?></p>
+				<div class="go-to-link">
+							<a class="btn" href="<?php echo get_permalink(); ?>">More Info...</a>
+				</div>
+
+			</section>
+			</div> <!-- 				inner close -->
       </article>
 
       <?php
@@ -94,19 +102,19 @@ $today = date("l");
     wp_reset_postdata();
   endif;
 	}
-
-	
-	
 	?>
+	
+			<div class="view-all">
+		<a class="btn" href="<?php echo get_permalink( get_page_by_title( $today ) ); ?>"><?php _e( 'View today\'s activities...', 'News Items' ); ?></a>
+		</div>
+
 		
 	</div> <!-- close .portfolio -->
  
-</div><!-- #content .site-content -->
-</section><!-- #primary .content-area -->
-
-</div><!-- #main .site-main -->
-</div><!-- .row -->
-</div><!-- .container -->
+</main>
 
 
-<?php get_footer(); ?>
+
+<?php 
+get_sidebar('left');
+get_footer(); ?>
